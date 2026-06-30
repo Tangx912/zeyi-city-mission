@@ -35,7 +35,6 @@ button {
     linear-gradient(180deg, #dff3fb 0%, #f7fbec 100%);
 }
 
-.hero-map,
 .map-panel,
 .form-card,
 .summary-card,
@@ -49,10 +48,10 @@ button {
   box-shadow: 5px 5px 0 #19445c;
 }
 
-.hero-map {
+.app-title {
   position: relative;
   margin-bottom: 16px;
-  padding: 18px;
+  padding: 8px 4px 12px;
   overflow: hidden;
 }
 
@@ -66,7 +65,7 @@ button {
   transform: rotate(-10deg);
 }
 
-.hero-map h1,
+.app-title h1,
 .mission-hero h2,
 .section-title h2 {
   margin: 4px 0 8px;
@@ -75,10 +74,15 @@ button {
   letter-spacing: 0;
 }
 
-.hero-map p,
+.app-title p,
 .mission-hero p,
 .section-title p {
   margin: 0;
+}
+
+.app-title h1 {
+  font-size: 34px;
+  text-shadow: 2px 2px 0 #ffffff;
 }
 
 .eyebrow {
@@ -93,6 +97,7 @@ button {
 
 .mission-hero,
 .section-title {
+  position: relative;
   padding: 16px;
 }
 
@@ -110,6 +115,105 @@ button {
   gap: 12px;
 }
 
+.current-theme-card,
+.goal-card,
+.subtask-menu {
+  border: 2px solid #19445c;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 5px 5px 0 #19445c;
+  padding: 14px;
+}
+
+.current-theme-card {
+  display: grid;
+  gap: 12px;
+}
+
+.current-theme-card h3,
+.current-theme-card p {
+  margin: 0;
+}
+
+.today-task-list,
+.other-task-list {
+  display: grid;
+  gap: 10px;
+}
+
+.today-task-list button,
+.other-task-list button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 66px;
+  border: 2px solid #19445c;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #163447;
+  box-shadow: 3px 3px 0 #19445c;
+  padding: 12px;
+  text-align: left;
+}
+
+.today-task-list span,
+.other-task-list span {
+  display: grid;
+  gap: 4px;
+}
+
+.today-task-list small,
+.other-task-list span {
+  color: #31556b;
+  font-weight: 700;
+}
+
+.honor-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.honor-strip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 2px solid #19445c;
+  border-radius: 999px;
+  background: #ffd66b;
+  padding: 6px 10px;
+  font-weight: 900;
+}
+
+.honor-strip span:nth-child(2n) {
+  background: #a8d98d;
+}
+
+.goal-card {
+  display: grid;
+  gap: 10px;
+}
+
+.goal-check {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  gap: 10px;
+  border: 2px dashed #9cc7d8;
+  border-radius: 14px;
+  background: #f7fbec;
+  padding: 12px;
+  color: #163447;
+}
+
+.goal-check input {
+  width: 20px;
+  height: 20px;
+  accent-color: #e4573d;
+}
+
 .mission-grid {
   grid-template-columns: 1fr;
 }
@@ -117,7 +221,8 @@ button {
 .mission-tile,
 .quick-grid button,
 .export-grid button,
-.primary-button {
+.primary-button,
+.secondary-button {
   min-height: 54px;
   border: 2px solid #19445c;
   border-radius: 16px;
@@ -212,6 +317,10 @@ textarea {
   background: #ffd66b;
 }
 
+.secondary-button {
+  background: #eef8fb;
+}
+
 .summary-card {
   display: flex;
   align-items: center;
@@ -286,6 +395,10 @@ textarea {
   overflow: hidden;
 }
 
+.featured-task {
+  background: #fff7df;
+}
+
 .route-line {
   position: absolute;
   top: 14px;
@@ -316,6 +429,92 @@ summary {
   border: 2px dashed #9cc7d8;
   border-radius: 14px;
   background: #f7fbec;
+}
+
+.today-steps {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.today-steps span {
+  border: 2px solid #19445c;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 10px 12px;
+  font-weight: 900;
+}
+
+.subtask-menu summary {
+  cursor: pointer;
+}
+
+.other-task-list {
+  margin-top: 12px;
+}
+
+.add-theme-card {
+  background: #eef8fb;
+}
+
+.mini-illustration {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 58px;
+  height: 44px;
+  border: 2px solid #19445c;
+  border-radius: 12px;
+  background: #ffd66b;
+  box-shadow: 3px 3px 0 #19445c;
+}
+
+.mini-illustration::before,
+.mini-illustration::after {
+  content: "";
+  position: absolute;
+  border: 2px solid #19445c;
+  background: #ffffff;
+}
+
+.mini-illustration.compass::before {
+  left: 18px;
+  top: 9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+.mini-illustration.compass::after {
+  left: 27px;
+  top: 1px;
+  width: 0;
+  height: 34px;
+  border-left: 2px solid #19445c;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
+  transform: rotate(38deg);
+}
+
+.mini-illustration.flag::before {
+  left: 12px;
+  top: 7px;
+  width: 0;
+  height: 28px;
+  border-left: 3px solid #19445c;
+  border-right: 0;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+.mini-illustration.flag::after {
+  left: 17px;
+  top: 7px;
+  width: 24px;
+  height: 16px;
+  border-radius: 4px;
+  background: #ffb199;
 }
 
 .task-card ol {

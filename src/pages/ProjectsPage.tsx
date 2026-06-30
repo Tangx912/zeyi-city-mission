@@ -13,9 +13,32 @@ export function ProjectsPage({ state, setState }: { state: AppState; setState: (
   const packages = [...taskPackages, ...state.customPackages];
   const [title, setTitle] = useState("");
   const [goal, setGoal] = useState("");
+  const date = new Date().toISOString().slice(0, 10);
+  const daily = state.dailyRecords.find((record) => record.date === date) ?? {
+    date,
+    movementDone: false,
+    expressionDone: false,
+    traceDone: false,
+    notes: "",
+    currentPackageId: packages[0]?.id
+  };
+  const currentPackage = packages.find((pack) => pack.id === daily.currentPackageId) ?? packages[0];
+  const currentTask = currentPackage.tasks.find((task) => task.id === daily.currentTaskId) ?? currentPackage.tasks[0];
 
   function setTaskStatus(taskId: string, status: TaskStatus) {
     setState({ ...state, taskStatuses: { ...state.taskStatuses, [taskId]: status } });
+  }
+
+  function updateDaily(next: typeof daily) {
+    setState({
+      ...state,
+      dailyRecords: [...state.dailyRecords.filter((record) => record.date !== date), next]
+    });
+  }
+
+  function switchPackage(packageId: string) {
+    const nextPackage = packages.find((pack) => pack.id === packageId) ?? packages[0];
+    updateDaily({ ...daily, currentPackageId: nextPackage.id, currentTaskId: nextPackage.tasks[0]?.id });
   }
 
   function addCustomPackage() {
@@ -39,7 +62,14 @@ export function ProjectsPage({ state, setState }: { state: AppState; setState: (
         }
       ]
     };
-    setState({ ...state, customPackages: [custom, ...state.customPackages] });
+    setState({
+      ...state,
+      customPackages: [custom, ...state.customPackages],
+      dailyRecords: [
+        ...state.dailyRecords.filter((record) => record.date !== date),
+        { ...daily, currentPackageId: custom.id, currentTaskId: custom.tasks[0].id }
+      ]
+    });
     setTitle("");
     setGoal("");
   }
@@ -47,41 +77,55 @@ export function ProjectsPage({ state, setState }: { state: AppState; setState: (
   return (
     <section className="page-stack">
       <div className="section-title">
-        <p className="eyebrow">PBL 任务地图</p>
-        <h2>主题可以穿插做</h2>
+        <p className="eyebrow">项目任务</p>
+        <h2>今日具体任务</h2>
       </div>
 
-      <div className="form-card compact">
-        <strong>临时新增主题</strong>
+      <div className="current-theme-card">
+        <label>
+          当前主题
+          <select value={currentPackage.id} onChange={(event) => switchPackage(event.target.value)}>
+            {packages.map((pack) => <option key={pack.id} value={pack.id}>{pack.title}</option>)}
+          </select>
+        </label>
+        <p>{currentPackage.goal}</p>
+      </div>
+
+      <article className="package-card featured-task">
+        <div className="mini-illustration flag" />
+        <p className="eyebrow">{currentTask.category}</p>
+        <h3>{currentTask.title}</h3>
+        <div className="today-steps">
+          {currentTask.steps.slice(0, 3).map((step) => <span key={step}>{step}</span>)}
+        </div>
+        <div className="prompt-box">
+          {currentTask.prompts.slice(0, 2).map((prompt) => <span key={prompt}>{prompt}</span>)}
+        </div>
+        <label>
+          完成状态
+          <select value={state.taskStatuses[currentTask.id] ?? "not-started"} onChange={(event) => setTaskStatus(currentTask.id, event.target.value as TaskStatus)}>
+            {statuses.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}
+          </select>
+        </label>
+      </article>
+
+      <details className="subtask-menu">
+        <summary>切换到这个主题里的其他任务</summary>
+        <div className="other-task-list">
+          {currentPackage.tasks.filter((task) => task.id !== currentTask.id).map((task) => (
+            <button key={task.id} onClick={() => updateDaily({ ...daily, currentPackageId: currentPackage.id, currentTaskId: task.id })}>
+              <strong>{task.title}</strong>
+              <span>{task.steps.slice(0, 2).join(" / ")}</span>
+            </button>
+          ))}
+        </div>
+      </details>
+
+      <div className="form-card compact add-theme-card">
+        <strong>新增今天自己的主题</strong>
         <input value={title} placeholder="比如：今天去牙科、今天整理玩具" onChange={(event) => setTitle(event.target.value)} />
-        <input value={goal} placeholder="这个主题想练什么？可不填" onChange={(event) => setGoal(event.target.value)} />
-        <button className="primary-button" onClick={addCustomPackage}>添加主题</button>
-      </div>
-
-      <div className="package-list">
-        {packages.map((pack) => (
-          <article className="package-card" key={pack.id}>
-            <div className="route-line" />
-            <p className="eyebrow">{pack.theme}</p>
-            <h3>{pack.title}</h3>
-            <p>{pack.goal}</p>
-            <div className="chip-row">{pack.abilities.map((item) => <span key={item}>{item}</span>)}</div>
-            <details>
-              <summary>展开任务和引导</summary>
-              {pack.tasks.map((task) => (
-                <div className="task-card" key={task.id}>
-                  <h4>{task.title}</h4>
-                  <p>{task.category}</p>
-                  <ol>{task.steps.map((step) => <li key={step}>{step}</li>)}</ol>
-                  <div className="prompt-box">{task.prompts.map((prompt) => <span key={prompt}>{prompt}</span>)}</div>
-                  <select value={state.taskStatuses[task.id] ?? "not-started"} onChange={(event) => setTaskStatus(task.id, event.target.value as TaskStatus)}>
-                    {statuses.map((status) => <option key={status.value} value={status.value}>{status.label}</option>)}
-                  </select>
-                </div>
-              ))}
-            </details>
-          </article>
-        ))}
+        <input value={goal} placeholder="今天想完成什么？可不填" onChange={(event) => setGoal(event.target.value)} />
+        <button className="primary-button" onClick={addCustomPackage}>添加并设为当前主题</button>
       </div>
     </section>
   );

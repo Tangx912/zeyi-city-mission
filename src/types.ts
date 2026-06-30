@@ -51,6 +51,10 @@ export interface DailyRecord {
   expressionDone: boolean;
   traceDone: boolean;
   notes: string;
+  currentPackageId?: string;
+  currentTaskId?: string;
+  movementGoals?: Record<string, boolean>;
+  homeworkGoals?: Record<string, boolean>;
 }
 
 export interface MovementRecord {

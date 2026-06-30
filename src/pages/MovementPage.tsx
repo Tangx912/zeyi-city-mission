@@ -2,6 +2,15 @@ import { useState } from "react";
 import type { AppState, MovementType } from "../types";
 
 const movementTypes: MovementType[] = ["快走", "游泳", "球类", "攀爬/平衡", "散步", "跑酷", "足球", "其他"];
+const movementGoals = [
+  "户外活动或运动 45 分钟",
+  "晚饭后散步或轻松走一走",
+  "喝水休息，不把体重变成压力话题"
+];
+
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
 
 export function MovementPage({ state, setState }: { state: AppState; setState: (state: AppState) => void }) {
   const [type, setType] = useState<MovementType>("散步");
@@ -12,6 +21,27 @@ export function MovementPage({ state, setState }: { state: AppState; setState: (
   const [note, setNote] = useState("");
 
   const weeklyMinutes = state.movementRecords.reduce((sum, record) => sum + record.durationMinutes, 0);
+  const date = todayKey();
+  const daily = state.dailyRecords.find((record) => record.date === date) ?? {
+    date,
+    movementDone: false,
+    expressionDone: false,
+    traceDone: false,
+    notes: "",
+    movementGoals: {}
+  };
+
+  function toggleGoal(goal: string) {
+    const movementGoalState = { ...(daily.movementGoals ?? {}), [goal]: !(daily.movementGoals ?? {})[goal] };
+    const doneCount = Object.values(movementGoalState).filter(Boolean).length;
+    setState({
+      ...state,
+      dailyRecords: [
+        ...state.dailyRecords.filter((record) => record.date !== date),
+        { ...daily, movementGoals: movementGoalState, movementDone: doneCount > 0 }
+      ]
+    });
+  }
 
   function addRecord() {
     setState({
@@ -37,10 +67,19 @@ export function MovementPage({ state, setState }: { state: AppState; setState: (
   return (
     <section className="page-stack">
       <div className="section-title">
-        <p className="eyebrow">运动日志</p>
-        <h2>身体先动起来</h2>
+        <p className="eyebrow">运动情况</p>
+        <h2>今日目标</h2>
+      </div>
+      <div className="goal-card">
+        {movementGoals.map((goal) => (
+          <label className="goal-check" key={goal}>
+            <input type="checkbox" checked={Boolean((daily.movementGoals ?? {})[goal])} onChange={() => toggleGoal(goal)} />
+            <span>{goal}</span>
+          </label>
+        ))}
       </div>
       <div className="form-card">
+        <strong>补充详情（可填可不填）</strong>
         <label>运动类型<select value={type} onChange={(event) => setType(event.target.value as MovementType)}>{movementTypes.map((item) => <option key={item}>{item}</option>)}</select></label>
         <label>时长（分钟）<input type="number" min="1" value={durationMinutes} onChange={(event) => setDurationMinutes(Number(event.target.value))} /></label>
         <label>地点<input value={place} placeholder="公园、泳池、小区..." onChange={(event) => setPlace(event.target.value)} /></label>

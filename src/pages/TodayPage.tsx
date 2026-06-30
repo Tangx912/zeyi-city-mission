@@ -1,4 +1,5 @@
-import { PlusCircle, Sparkles } from "lucide-react";
+import { MapPinned, PlusCircle, Sparkles } from "lucide-react";
+import { taskPackages } from "../data/taskPackages";
 import { getBadges, countStars } from "../lib/achievements";
 import type { AppState, TabKey } from "../types";
 
@@ -21,8 +22,12 @@ export function TodayPage({
     movementDone: false,
     expressionDone: false,
     traceDone: false,
-    notes: ""
+    notes: "",
+    currentPackageId: taskPackages[0].id
   };
+  const packages = [...taskPackages, ...state.customPackages];
+  const currentPackage = packages.find((pack) => pack.id === daily.currentPackageId) ?? packages[0];
+  const currentTasks = currentPackage.tasks.slice(0, 3);
   const todayMovement = state.movementRecords.filter((record) => record.date === date);
   const todayHomework = state.homeworkRecords.filter((record) => record.date === date);
   const todayArtifacts = state.artifacts.filter((record) => record.date === date);
@@ -39,24 +44,42 @@ export function TodayPage({
   return (
     <section className="page-stack">
       <div className="mission-hero map-panel">
+        <div className="mini-illustration compass" />
         <p className="eyebrow">今日任务局</p>
         <h2>今天去哪里探索？</h2>
-        <p>完成 70% 就算成功，普通日子只要有运动、聊天和一个记录就很好。</p>
+        <div className="honor-strip">
+          <span><Sparkles size={16} />{stars} 星</span>
+          {(badges.length ? badges.slice(0, 2) : ["城市小队员养成中"]).map((badge) => (
+            <span key={badge}>{badge}</span>
+          ))}
+        </div>
       </div>
 
-      <div className="mission-grid">
-        <button className={daily.movementDone ? "mission-tile done" : "mission-tile"} onClick={() => updateDaily({ ...daily, movementDone: !daily.movementDone })}>
-          <strong>运动啦</strong>
-          <span>户外、游泳、跑酷、足球、散步都算</span>
-        </button>
-        <button className={daily.expressionDone ? "mission-tile done" : "mission-tile"} onClick={() => updateDaily({ ...daily, expressionDone: !daily.expressionDone })}>
-          <strong>聊一聊</strong>
-          <span>讲今天看到的 3 件事</span>
-        </button>
-        <button className={daily.traceDone ? "mission-tile done" : "mission-tile"} onClick={() => updateDaily({ ...daily, traceDone: !daily.traceDone })}>
-          <strong>来记录</strong>
-          <span>画、贴、拍、讲四选一</span>
-        </button>
+      <div className="current-theme-card">
+        <div>
+          <p className="eyebrow">当前主题</p>
+          <h3>{currentPackage.title}</h3>
+          <p>{currentPackage.goal}</p>
+        </div>
+        <label>
+          切换主题
+          <select value={currentPackage.id} onChange={(event) => updateDaily({ ...daily, currentPackageId: event.target.value, currentTaskId: undefined })}>
+            {packages.map((pack) => <option key={pack.id} value={pack.id}>{pack.title}</option>)}
+          </select>
+        </label>
+        <button className="secondary-button" onClick={() => goTo("projects")}>新增或调整主题</button>
+      </div>
+
+      <div className="today-task-list">
+        {currentTasks.map((task) => (
+          <button key={task.id} onClick={() => goTo("projects")}>
+            <MapPinned size={18} />
+            <span>
+              <strong>{task.title}</strong>
+              <small>{task.steps.slice(0, 2).join(" / ")}</small>
+            </span>
+          </button>
+        ))}
       </div>
 
       <label className="field-card">
@@ -66,7 +89,7 @@ export function TodayPage({
 
       <div className="quick-grid">
         <button onClick={() => goTo("movement")}><PlusCircle size={18} />记运动</button>
-        <button onClick={() => goTo("projects")}><PlusCircle size={18} />选任务</button>
+        <button onClick={() => goTo("projects")}><PlusCircle size={18} />今日任务</button>
         <button onClick={() => goTo("homework")}><PlusCircle size={18} />记作业</button>
         <button onClick={() => goTo("artifacts")}><PlusCircle size={18} />加素材</button>
       </div>
@@ -76,13 +99,7 @@ export function TodayPage({
           <p className="eyebrow">今日进度</p>
           <h3>{todayMovement.length} 运动 · {todayHomework.length} 作业 · {todayArtifacts.length} 素材</h3>
         </div>
-        <div className="star-pill"><Sparkles size={16} />{stars} 星</div>
-      </div>
-
-      <div className="badge-row">
-        {(badges.length ? badges : ["城市小队员养成中"]).map((badge) => (
-          <span key={badge}>{badge}</span>
-        ))}
+        <div className="star-pill"><Sparkles size={16} />荣誉</div>
       </div>
     </section>
   );

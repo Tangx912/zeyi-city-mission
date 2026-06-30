@@ -18,7 +18,7 @@ export function App() {
 
   return (
     <main className="app-shell">
-      <header className="hero-map">
+      <header className="app-title">
         <div className="map-path" />
         <p className="eyebrow">2026 暑假</p>
         <h1>泽一城市任务局</h1>
