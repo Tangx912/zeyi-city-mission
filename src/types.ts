@@ -1,4 +1,4 @@
-export type TabKey = "home" | "tasks" | "map" | "growth" | "profile";
+export type TabKey = "today" | "movement" | "projects" | "homework" | "artifacts";
 
 export type TaskStatus = "not-started" | "in-progress" | "done" | "artifact-ready";
 
